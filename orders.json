@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1749609274469",
+    "symbol": "BTCUSDT",
+    "action": "BUY",
+    "price_entry": "43877.58",
+    "tp_price": 44755.13,
+    "sl_price": 43438.8,
+    "leverage": "10x",
+    "timeframe": "5m",
+    "timestamp": "2025-06-11T02:34:34.469Z",
+    "signal_data": {
+      "plusDI": 27.5,
+      "minusDI": 15,
+      "adx": 25
+    }
+  },
+  {
+    "id": "1749609295144",
+    "symbol": "BTCUSDT",
+    "action": "BUY",
+    "price_entry": "43985.52",
+    "tp_price": 44865.23,
+    "sl_price": 43545.66,
+    "leverage": "10x",
+    "timeframe": "5m",
+    "timestamp": "2025-06-11T02:34:55.144Z",
+    "signal_data": {
+      "plusDI": 27.5,
+      "minusDI": 15,
+      "adx": 25
+    }
+  },
+  {
+    "id": "1749609442478",
+    "symbol": "BTCUSDT",
+    "action": "BUY",
+    "price_entry": "43013.13",
+    "tp_price": 43873.4,
+    "sl_price": 42583,
+    "leverage": "10x",
+    "timeframe": "5m",
+    "timestamp": "2025-06-11T02:37:22.478Z",
+    "signal_data": {
+      "plusDI": 27.5,
+      "minusDI": 15,
+      "adx": 25
+    }
+  },
+  {
+    "id": "1749609468152",
+    "symbol": "BTCUSDT",
+    "action": "BUY",
+    "price_entry": "43807.30",
+    "tp_price": 44683.44,
+    "sl_price": 43369.22,
+    "leverage": "10x",
+    "timeframe": "5m",
+    "timestamp": "2025-06-11T02:37:48.152Z",
+    "signal_data": {
+      "plusDI": 27.5,
+      "minusDI": 15,
+      "adx": 25
+    }
+  },
+  {
+    "id": "1749609671255",
+    "symbol": "BTCUSDT",
+    "action": "BUY",
+    "price_entry": "43916.93",
+    "tp_price": 44795.27,
+    "sl_price": 43477.76,
+    "leverage": "10x",
+    "timeframe": "5m",
+    "timestamp": "2025-06-11T02:41:11.255Z",
+    "signal_data": {
+      "plusDI": 27.5,
+      "minusDI": 15,
+      "adx": 25
+    }
+  }
+]
