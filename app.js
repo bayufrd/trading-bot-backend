@@ -29,42 +29,32 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test Binance API connection
 app.get('/test-binance/:symbol?', async (req, res) => {
   try {
     const symbol = req.params.symbol || 'BTCUSDT';
     console.log(`Testing Binance API for symbol: ${symbol}`);
     
-    const priceResponse = await getBinancePrice(symbol);
+    // Call the getBinancePrice function to fetch the actual price
+    const price = await getBinancePrice(symbol);
     
-    if (priceResponse.success) {
-      res.json({
-        success: true,
-        message: 'Binance API connection successful',
-        symbol: symbol,
-        price: priceResponse.price, 
-        timestamp: new Date().toISOString()
-      });
-    } else {
-      res.json({
-        success: false,
-        message: 'Binance API connection failed',
-        error: priceResponse.error,
-        symbol: symbol,
-        price: null
-      });
-    }
+    res.json({
+      success: true,
+      message: 'Binance API connection successful',
+      symbol: symbol,
+      price: price,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
     console.error('Binance API test failed:', error);
     res.status(500).json({
       success: false,
       message: 'Binance API connection failed',
       error: error.message,
-      symbol: req.params.symbol || 'BTCUSDT',
-      price: null 
+      symbol: req.params.symbol || 'BTCUSDT'
     });
   }
 });
-
 
 
 async function startServer() {
