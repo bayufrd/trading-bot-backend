@@ -1,13 +1,14 @@
-const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const path = require('path');
 
 const dbPath = path.join(__dirname, 'trading_bot.db');
-const db = new sqlite3.Database(dbPath);
+const db = new Database(dbPath);
 
 function initDatabase() {
   return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.run(`
+    try {
+      // Create orders table
+      db.prepare(`
         CREATE TABLE IF NOT EXISTS orders (
           id TEXT PRIMARY KEY,
           symbol TEXT NOT NULL,
@@ -24,14 +25,10 @@ function initDatabase() {
           status TEXT DEFAULT 'ACTIVE',
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-      `, (err) => {
-        if (err) {
-          reject('Error creating orders table:', err);
-        }
-      });
+      `).run();
 
-      // Create config table if it doesn't exist
-      db.run(`
+      // Create config table
+      db.prepare(`
         CREATE TABLE IF NOT EXISTS config (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           symbol TEXT,
@@ -44,59 +41,53 @@ function initDatabase() {
           leverage TEXT,
           updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-      `, (err) => {
-        if (err) {
-          reject('Error creating config table:', err);
-        } else {
-          db.get('SELECT COUNT(*) AS count FROM config', (err, row) => {
-            if (err) {
-              reject('Error checking config table:', err);
-            } else if (row.count === 0) {
-              const defaultConfig = {
-                symbol: 'BTCUSDT',
-                timeframe: '5m',
-                plusDIThreshold: 25,
-                minusDIThreshold: 20,
-                adxMinimum: 20,
-                takeProfitPercent: 2,
-                stopLossPercent: 1,
-                leverage: '10x',
-              };
+      `).run();
 
-              const stmt = db.prepare(`
-                INSERT INTO config (
-                  symbol, timeframe, plusDIThreshold, minusDIThreshold,
-                  adxMinimum, takeProfitPercent, stopLossPercent, leverage
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-              `);
+      // Check if config exists
+      const configCount = db.prepare('SELECT COUNT(*) AS count FROM config').get().count;
+      
+      if (configCount === 0) {
+        const defaultConfig = {
+          symbol: 'BTCUSDT',
+          timeframe: '5m',
+          plusDIThreshold: 25,
+          minusDIThreshold: 20,
+          adxMinimum: 20,
+          takeProfitPercent: 2,
+          stopLossPercent: 1,
+          leverage: '10x',
+        };
 
-              stmt.run([
-                defaultConfig.symbol,
-                defaultConfig.timeframe,
-                defaultConfig.plusDIThreshold,
-                defaultConfig.minusDIThreshold,
-                defaultConfig.adxMinimum,
-                defaultConfig.takeProfitPercent,
-                defaultConfig.stopLossPercent,
-                defaultConfig.leverage
-              ], function(err) {
-                if (err) {
-                  reject('Error inserting default config:', err);
-                } else {
-                  console.log('Default configuration inserted into database');
-                  resolve();
-                }
-              });
+        const insertStmt = db.prepare(`
+          INSERT INTO config (
+            symbol, timeframe, plusDIThreshold, minusDIThreshold,
+            adxMinimum, takeProfitPercent, stopLossPercent, leverage
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `);
 
-              stmt.finalize();
-            } else {
-              resolve();
-            }
-          });
-        }
-      });
-    });
+        insertStmt.run([
+          defaultConfig.symbol,
+          defaultConfig.timeframe,
+          defaultConfig.plusDIThreshold,
+          defaultConfig.minusDIThreshold,
+          defaultConfig.adxMinimum,
+          defaultConfig.takeProfitPercent,
+          defaultConfig.stopLossPercent,
+          defaultConfig.leverage
+        ]);
+
+        console.log('Default configuration inserted into database');
+      }
+
+      resolve(db);
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
-module.exports = { db, initDatabase };
+function closeDatabase() {
+  db.close();
+}
+
+module.exports = { db, initDatabase, closeDatabase };
