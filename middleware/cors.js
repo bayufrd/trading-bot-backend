@@ -1,17 +1,21 @@
-import Cors from 'cors';
+const express = require('express');
+const cors = require('cors');
 
-const cors = Cors({
-    methods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
-    origin: ['https://trading-bot-frontend-rho.vercel.app'],
+const app = express();
+
+// Konfigurasi CORS
+const corsOptions = {
+    origin: 'https://trading-bot-frontend-rho.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+
+app.post('/webhook', (req, res) => {
+    res.json({ message: 'Webhook received!' });
 });
 
-export function runCors(req, res) {
-    return new Promise((resolve, reject) => {
-        cors(req, res, (result) => {
-            if (result instanceof Error) {
-                return reject(result);
-            }
-            return resolve(result);
-        });
-    });
-}
+app.listen(3001, () => {
+    console.log('Server is running on port 3001');
+});
