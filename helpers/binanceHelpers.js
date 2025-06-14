@@ -3,8 +3,8 @@ const https = require('https');
 const crypto = require('crypto');
 
 const testnetUrl = 'https://testnet.binancefuture.com/fapi/v1/account';
-const apiKey = process.env.BINANCE_TESTNET_API_KEY;
-const apiSecret = process.env.BINANCE_TESTNET_API_SECRET;
+const apiKey = process.env.BINANCE_TESTNET_API_KEY || 'RwEmLpsvwCtAAiCMgfBCpLR1nnyRLZdx5cF2dGhvE8wNf1cnwuUMuRmwOV0kEtxF';
+const apiSecret = process.env.BINANCE_TESTNET_API_SECRET || '1lTz7TPPeQy0gvWb5xoXV9tdsQ2d73cBq8qk2MmFZ3i1X6jHb2z5I0N12Z3Ja1s4';
 
 function generateSignature(params) {
   const queryString = Object.keys(params)
