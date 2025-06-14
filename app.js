@@ -6,7 +6,6 @@ const configRoutes = require('./routes/configRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const { loadConfig } = require('./helpers/dbHelpers');
-const { api } = require('./helpers/binanceHelpers');
 const { getBinancePrice, getAccountInfo } = require('./helpers/binanceHelpers');
 
 const PORT = process.env.PORT || 3001;
@@ -14,14 +13,14 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 app.use(corsMiddleware);
-
 app.use(express.json());
 
+// Define routes
 app.use('/config', configRoutes);
 app.use('/orders', orderRoutes);
 app.use('/webhook', webhookRoutes);
 
-// Health check
+// Health check route
 app.get('/health', (req, res) => {
   res.json({
     success: true,
@@ -29,7 +28,8 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-//Account Check
+
+// Account info route
 app.get('/account', async (req, res) => {
   try {
     const accountInfo = await getAccountInfo();
@@ -39,13 +39,13 @@ app.get('/account', async (req, res) => {
     res.status(500).json({ success: false, message: 'Error fetching account info', error: error.message });
   }
 });
+
 // Test Binance API connection
 app.get('/test-binance/:symbol?', async (req, res) => {
   try {
     const symbol = req.params.symbol || 'BTCUSDT';
     console.log(`Testing Binance API for symbol: ${symbol}`);
     
-    // Call the getBinancePrice function to fetch the actual price
     const price = await getBinancePrice(symbol);
     
     res.json({
@@ -66,7 +66,7 @@ app.get('/test-binance/:symbol?', async (req, res) => {
   }
 });
 
-
+// Start server after initializing the database
 async function startServer() {
   try {
     await initDatabase();

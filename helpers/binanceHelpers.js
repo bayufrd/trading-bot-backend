@@ -1,5 +1,6 @@
 const axios = require('axios');
 const https = require('https');
+const crypto = require('crypto');
 
 const testnetUrl = 'https://testnet.binancefuture.com/fapi/v1/account';
 const apiKey = process.env.BINANCE_TESTNET_API_KEY;
@@ -14,9 +15,9 @@ function generateSignature(params) {
 
 async function getAccountInfo() {
   const params = {
-      timestamp: Date.now() // Timestamp untuk permintaan
+      timestamp: Date.now() 
   };
-  params.signature = generateSignature(params); // Buat signature
+  params.signature = generateSignature(params);
 
   try {
       const response = await axios.get(`${testnetUrl}?${new URLSearchParams(params)}`, {
