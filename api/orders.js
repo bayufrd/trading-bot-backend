@@ -1,6 +1,9 @@
 import { getOrders, getOrdersBySymbol, updateOrderStatus } from '../controllers/orderController';
+import { runCors } from '../middleware/cors'; 
 
 export default async function handler(req, res) {
+    await runCors(req, res); 
+
     if (req.method === 'GET') {
         if (req.query.symbol) {
             return await getOrdersBySymbol(req, res);

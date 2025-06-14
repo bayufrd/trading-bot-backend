@@ -1,9 +1,11 @@
-import { initDatabase } from '../database/database'; // Pastikan Anda mengimpornya
+import { initDatabase } from '../database/database'; 
 import { saveConfig, getConfig } from '../controllers/configController';
+import { runCors } from '../middleware/cors'; 
 
 export default async function handler(req, res) {
     try {
-        await initDatabase();  // Inisialisasi database setiap kali ada permintaan
+        await runCors(req, res); 
+        await initDatabase();  
 
         if (req.method === 'POST') {
             return await saveConfig(req, res);

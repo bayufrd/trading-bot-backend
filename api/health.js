@@ -1,6 +1,10 @@
-export default function handler(req, res) {
+import { runCors } from '../middleware/cors'; 
+
+export default async function handler(req, res) {
+    await runCors(req, res); 
+
     res.json({
-        success: true,
+
         message: 'Server is running',
         timestamp: new Date().toISOString(),
     });
