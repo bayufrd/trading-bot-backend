@@ -52,12 +52,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.use(cors({
-  origin: [
-    'https://your-frontend-domain.vercel.app',
-    'http://localhost:3000'
-  ]
-}));
 // Test Binance API connection
 app.get('/test-binance/:symbol?', async (req, res) => {
   try {
