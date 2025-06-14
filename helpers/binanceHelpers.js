@@ -1,6 +1,35 @@
 const axios = require('axios');
 const https = require('https');
 
+const testnetUrl = 'https://testnet.binancefuture.com/fapi/v1/account';
+const apiKey = process.env.BINANCE_TESTNET_API_KEY;
+const apiSecret = process.env.BINANCE_TESTNET_API_SECRET;
+
+function generateSignature(params) {
+  const queryString = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&');
+  return crypto.createHmac('sha256', apiSecret).update(queryString).digest('hex');
+}
+
+async function getAccountInfo() {
+  const params = {
+      timestamp: Date.now() // Timestamp untuk permintaan
+  };
+  params.signature = generateSignature(params); // Buat signature
+
+  try {
+      const response = await axios.get(`${testnetUrl}?${new URLSearchParams(params)}`, {
+          headers: {
+              'X-MBX-APIKEY': apiKey,
+          }
+      });
+      return response.data;
+  } catch (error) {
+      console.error('Error fetching account info:', error.response ? error.response.data : error.message);
+      throw error;
+  }
+}
 async function getBinancePrice(symbol) {
   try {
     console.log(`Fetching price for symbol: ${symbol}`);
@@ -53,4 +82,4 @@ async function getBinancePrice(symbol) {
   }
 }
 
-module.exports = { getBinancePrice };
+module.exports = { getAccountInfo , getBinancePrice };

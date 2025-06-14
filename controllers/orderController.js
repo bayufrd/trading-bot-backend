@@ -1,4 +1,5 @@
 const { getAllOrders: getAllOrdersFromDB, getOrdersBySymbol: getOrdersBySymbolFromDB, updateOrderStatus: updateOrderStatusInDB } = require('../helpers/dbHelpers');
+const { getAccountInfo } = require('../helpers/binanceHelpers');
 
 async function getOrders(req, res) {
   try {
@@ -8,6 +9,16 @@ async function getOrders(req, res) {
     res.status(500).json({ success: false, message: 'Error fetching orders', error: error.message });
   }
 }
+
+router.get('/account', async (req, res) => {
+  try {
+      const accountInfo = await getAccountInfo();
+      res.json({ success: true, accountInfo });
+  } catch (error) {
+      console.error('Error fetching account info:', error);
+      res.status(500).json({ success: false, message: 'Error fetching account info', error: error.message });
+  }
+});
 
 async function getOrdersBySymbol(req, res) {
   try {

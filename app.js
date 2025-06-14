@@ -7,7 +7,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 const { loadConfig } = require('./helpers/dbHelpers');
 const { api } = require('./helpers/binanceHelpers');
-const { getBinancePrice } = require('./helpers/binanceHelpers');
+const { getBinancePrice, getAccountInfo } = require('./helpers/binanceHelpers');
 
 const PORT = process.env.PORT || 3001;
 
@@ -29,7 +29,16 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-
+//Account Check
+app.get('/account', async (req, res) => {
+  try {
+    const accountInfo = await getAccountInfo();
+    res.json({ success: true, accountInfo });
+  } catch (error) {
+    console.error('Error fetching account info:', error);
+    res.status(500).json({ success: false, message: 'Error fetching account info', error: error.message });
+  }
+});
 // Test Binance API connection
 app.get('/test-binance/:symbol?', async (req, res) => {
   try {
