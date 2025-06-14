@@ -1,21 +1,25 @@
-const express = require('express');
 const cors = require('cors');
 
-const app = express();
-
-// Konfigurasi CORS
 const corsOptions = {
-    origin: 'https://trading-bot-frontend-rho.vercel.app',
+    origin: function (origin, callback) {
+        // Izinkan permintaan tanpa origin untuk mobile apps atau curl requests
+        if (!origin) return callback(null, true);
+
+        // Daftar origin yang diizinkan, misalnya dari variabel lingkungan
+        const allowedOrigins = process.env.CORS_ORIGINS
+            ? process.env.CORS_ORIGINS.split(',')
+            : ['http://localhost:3000', 'https://trading-bot-frontend-rho.vercel.app']; // Daftar origin yang diizinkan
+          
+        // Jika origin ada di dalam daftar, izinkan
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 };
 
-app.use(cors(corsOptions));
-
-app.post('/webhook', (req, res) => {
-    res.json({ message: 'Webhook received!' });
-});
-
-app.listen(3001, () => {
-    console.log('Server is running on port 3001');
-});
+module.exports = cors(corsOptions);

@@ -1,5 +1,5 @@
 const express = require('express');
-const cors = require('cors');
+const corsMiddleware = require('./middleware/cors');
 const path = require('path');
 const { initDatabase } = require('./database/database');
 const configRoutes = require('./routes/configRoutes');
@@ -10,32 +10,11 @@ const { api } = require('./helpers/binanceHelpers');
 const { getBinancePrice } = require('./helpers/binanceHelpers');
 
 const PORT = process.env.PORT || 3001;
-const CORS_ORIGINS = process.env.CORS_ORIGINS 
-  ? process.env.CORS_ORIGINS.split(',') 
-  : ['http://localhost:3000'];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Check if the origin is in the allowed list
-    if (CORS_ORIGINS.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
 
 const app = express();
 
-// Apply CORS before routes
-app.use(cors(corsOptions));
-// Middleware
+app.use(corsMiddleware);
+
 app.use(express.json());
 
 app.use('/config', configRoutes);
