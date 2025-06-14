@@ -6,9 +6,9 @@ const axios = require('axios');
 async function simulateOrderOnTestnet(order) {
   try {
     const testnetUrl = 'https://testnet.binancefuture.com/fapi/v1/order';
-    
-    const apiKey = process.env.BINANCE_TESTNET_API_KEY || 'RwEmLpsvwCtAAiCMgfBCpLR1nnyRLZdx5cF2dGhvE8wNf1cnwuUMuRmwOV0kEtxF';
-    const apiSecret = process.env.BINANCE_TESTNET_API_SECRET || '1lTz7TPPeQy0gvWb5xoXV9tdsQ2d73cBq8qk2MmFZ3i1X6jHb2z5I0N12Z3Ja1s4';
+
+    const apiKey = process.env.BINANCE_TESTNET_API_KEY || '8I00lFUZR67NuczEoLPxOjXwlrZo0McUUHLl4TgUdsTjFAlYs5rXCSUHB900lDvg';
+    const apiSecret = process.env.BINANCE_TESTNET_API_SECRET || 'cLBYvr9TTS2Ffjm4czIUmH928qb9cGGXCXNv4KrhIuajib6IBWaElsIdvyAiR22K';
 
     const params = {
       symbol: order.symbol,
@@ -16,21 +16,21 @@ async function simulateOrderOnTestnet(order) {
       type: 'LIMIT',
       timeInForce: 'GTC',
       price: order.price_entry,
-      quantity: calculateOrderQuantity(order.price_entry), 
-      leverage: parseInt(order.leverage), 
+      quantity: calculateOrderQuantity(order.price_entry), // Check if this returns > 0
+      leverage: parseInt(order.leverage),
       stopPrice: order.sl_price,
       takeProfitPrice: order.tp_price,
       timestamp: Date.now()
     };
+    console.log('quantity=' + quantity)
 
     const signature = generateSignature(params, apiSecret);
     params.signature = signature;
 
-    const response = await axios.post(testnetUrl, null, {
-      params,
+    const response = await axios.post(testnetUrl, params, {
       headers: {
         'X-MBX-APIKEY': apiKey,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       }
     });
 
@@ -56,10 +56,10 @@ async function processWebhook(req, res) {
 
     const action = validateSignal(plusDI, minusDI, adx);
     if (!action) {
-      return res.json({ 
-        success: true, 
-        message: 'Signal does not meet trading criteria', 
-        action: 'NO_ACTION' 
+      return res.json({
+        success: true,
+        message: 'Signal does not meet trading criteria',
+        action: 'NO_ACTION'
       });
     }
 
@@ -113,18 +113,18 @@ function calculateOrderQuantity(price) {
   // 1. Account balance
   // 2. Risk management rules
   // 3. Selected leverage
-  const accountBalance = 1000; 
-  const riskPercentage = 0.01; 
-  
+  const accountBalance = 1000;
+  const riskPercentage = 0.01;
+
   const positionSize = (accountBalance * riskPercentage) / price;
   return parseFloat(positionSize.toFixed(3));
 }
 
 function generateSignature(params, apiSecret) {
   const queryString = Object.keys(params)
-    .map(key => `${key}=${params[key]}`)
+    .map(key => `${key}=${encodeURIComponent(params[key])}`) // Encode each parameter
     .join('&');
-  
+  return crypto.createHmac('sha256', apiSecret).update(queryString).digest('hex'); // Generate and return signature
 }
 
 module.exports = { processWebhook };

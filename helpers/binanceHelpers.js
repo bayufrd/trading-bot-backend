@@ -3,8 +3,8 @@ const https = require('https');
 const crypto = require('crypto');
 
 const testnetUrl = 'https://testnet.binancefuture.com/fapi/v1/account';
-const apiKey = process.env.BINANCE_TESTNET_API_KEY || 'RwEmLpsvwCtAAiCMgfBCpLR1nnyRLZdx5cF2dGhvE8wNf1cnwuUMuRmwOV0kEtxF';
-const apiSecret = process.env.BINANCE_TESTNET_API_SECRET || '1lTz7TPPeQy0gvWb5xoXV9tdsQ2d73cBq8qk2MmFZ3i1X6jHb2z5I0N12Z3Ja1s4';
+const apiKey = process.env.BINANCE_TESTNET_API_KEY || '8I00lFUZR67NuczEoLPxOjXwlrZo0McUUHLl4TgUdsTjFAlYs5rXCSUHB900lDvg';
+const apiSecret = process.env.BINANCE_TESTNET_API_SECRET || 'cLBYvr9TTS2Ffjm4czIUmH928qb9cGGXCXNv4KrhIuajib6IBWaElsIdvyAiR22K';
 
 function generateSignature(params) {
   const queryString = Object.keys(params)
@@ -49,7 +49,8 @@ async function getBinancePrice(symbol) {
           timeout: 10000,
           headers: {
             'User-Agent': 'TradingBot/1.0'
-          }
+          },
+          httpsAgent: new https.Agent({ rejectUnauthorized: false }) // Bypass SSL verification (for testing purposes only)
         });
         
         if (response.data && response.data.price) {
